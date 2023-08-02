@@ -25,7 +25,7 @@ class Character {
   );
   param perks (
     is => ro,
-    isa => ArrayRef, # TODO this breaks everything
+    isa => ArrayRef,
   ); # TODO handles => add_perk => push etc
 
   factory char_from_data(%data) {
