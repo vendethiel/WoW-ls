@@ -7,6 +7,7 @@ use Syntax::Keyword::Match;
 use Quantum::Superpositions;
 use YAML::XS;
 use IO::All;
+use List::Util qw(first);
 use XXX;
 
 my $contents = io->file('chars.yml')->slurp;
@@ -16,10 +17,8 @@ my @char = map { Wow->char_from_data(%$_) } @chardata;
 for my $char (@char) {
   say $char->introduction;
 }
+say "";
 
-unless (all(Wow::WOWCLASSES) eq any(map {$_->wowclass} @char)) {
-  say "Missing classes!";
-}
 
 match ($ARGV[0] // "" : eq) {
   case ("add") {
@@ -31,6 +30,30 @@ match ($ARGV[0] // "" : eq) {
     say Dump @char;
   }
 
-  case ("") {}
+  case("perk") {
+    @ARGV == 4 or die "Usage: `perk add|rm <char> <perk>`";
+    my $name = $ARGV[2] // die "Usage: `perk add <char> <perk>`";
+    my $perk = $ARGV[3] // die "Usage: `perk add <char> <perk>`";
+    my $found = (first {$_->name eq $name} @char) // die "No char named like that";
+    match ($ARGV[1] // "" : eq) {
+      case ("add") {
+        my $updated = $found->with_perk($perk);
+        say "Character with new perk:";
+        say $updated->introduction;
+      }
+
+      case ("rm") {
+        my $updated = $found->without_perk($perk);
+        say "Character with perk removed:";
+        say $updated->introduction;
+      }
+    }
+  }
+
+  case ("") {
+    unless (all(Wow::WOWCLASSES) eq any(map {$_->wowclass} @char)) {
+      say "Missing classes!";
+    }
+  }
   default { "Unrecognized option" }
 }

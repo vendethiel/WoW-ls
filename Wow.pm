@@ -10,9 +10,9 @@ class Perk {
     enum => [qw/mountwotlk mountbc mount60 mount40/],
   );
 
-  #coerce from Str via from_string {
-  #  return $class->new(name => $_);
-  #}
+  coerce from Str via from_string {
+    return $class->new(name => $_);
+  }
 }
 
 class Character {
@@ -25,12 +25,12 @@ class Character {
   );
   param perks (
     is => ro,
-    isa => ArrayRef,
+    isa => ArrayRef, # TODO ArrayRef[Perk]
   ); # TODO handles => add_perk => push etc
 
   factory char_from_data(%data) {
     my @perks = map { Perk->new(name => $_) } ($data{'perks'} // [])->@*;
-    return $class->new(%data{qw/name wowclass level perks/}, perks => \@perks)
+    return $class->new(%data{qw/name wowclass level/}, perks => \@perks)
   }
 
   method introduction() {
@@ -44,6 +44,18 @@ class Character {
     }
   }
 
+  method with_perk(Perk $new_perk) {
+    return $self if $self->has_perk($new_perk);
+    my @perks = ($self->perks->@*, $new_perk);
+    $class->new(%$self{qw/name wowclass level/}, perks => \@perks);
+  }
+
+  method without_perk(Perk $perk) {
+    return $self if !$self->has_perk($perk);
+    my @perks = grep {$_->name ne $perk->name} $self->perks->@*;
+    $class->new(%$self{qw/name wowclass level/}, perks => \@perks);
+  }
+
   method mount_perk() {
     state @mounts = qw/mountwotlk mountbc mount60 mount30/;
     for my $mount (@mounts) {
@@ -51,6 +63,8 @@ class Character {
     }
   }
 
-  method has_perk($perk) = any(map {$_->name} $self->perks->@*) eq $perk;
+  multi method has_perk(Str $perk) = any(map {$_->name} $self->perks->@*) eq $perk;
+  multi method has_perk(Perk $perk) = any(map {$_->name} $self->perks->@*) eq $perk->name;
+
   method has_perks = +$self->perks->@*;
 }
