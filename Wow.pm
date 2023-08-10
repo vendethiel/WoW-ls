@@ -63,8 +63,7 @@ class Character {
     }
   }
 
-  multi method has_perk(Str $perk) = any(map {$_->name} $self->perks->@*) eq $perk;
-  multi method has_perk(Perk $perk) = any(map {$_->name} $self->perks->@*) eq $perk->name;
+  method has_perk(Perk $perk) = any(map {$_->name} $self->perks->@*) eq $perk->name;
 
   method has_perks = +$self->perks->@*;
 }
