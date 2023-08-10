@@ -15,7 +15,7 @@ class Perk {
   }
 }
 
-class Character {
+class Character with ::MooseX::Clone {
   param name (type => Str, is => ro);
   param level (type => Int, is => ro);
   param wowclass (
@@ -47,13 +47,13 @@ class Character {
   method with_perk(Perk $new_perk) {
     return $self if $self->has_perk($new_perk);
     my @perks = ($self->perks->@*, $new_perk);
-    $class->new(%$self{qw/name wowclass level/}, perks => \@perks);
+    $self->clone(perks => \@perks);
   }
 
   method without_perk(Perk $perk) {
     return $self if !$self->has_perk($perk);
     my @perks = grep {$_->name ne $perk->name} $self->perks->@*;
-    $class->new(%$self{qw/name wowclass level/}, perks => \@perks);
+    $self->clone(perks => \@perks);
   }
 
   method mount_perk() {
