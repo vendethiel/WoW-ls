@@ -57,7 +57,7 @@ class Character {
   }
 
   method mount_perk() {
-    state @mounts = qw/mountwotlk mountbc mount60 mount30/;
+    state @mounts = qw/mountwotlk mountbc mount60 mount40/;
     for my $mount (@mounts) {
       return $mount if $self->has_perk($mount);
     }
