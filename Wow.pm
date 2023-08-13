@@ -1,8 +1,17 @@
 use v5.38.0;
 use lib '.';
 package Wow;
+use Zydeco declare => [qw(Perk Character)];
 use Ven;
 use constant WOWCLASSES => qw/rogue mage priest druid warrior warlock hunter deathknight paladin shaman/;
+
+# Temporary workaround for this issue:
+# https://github.com/tobyink/p5-zydeco/issues/15
+
+BEGIN {
+  package Wow::Types;
+  use Type::Library -base;
+}
 
 class Perk {
   param name (
@@ -25,7 +34,7 @@ class Character with ::MooseX::Clone {
   );
   param perks (
     is => ro,
-    isa => ArrayRef, # TODO ArrayRef[Perk]
+    isa => ArrayRef[Perk],
   ); # TODO handles => add_perk => push etc
 
   factory char_from_data(%data) {
