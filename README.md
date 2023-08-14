@@ -26,9 +26,11 @@ Raku-style `~~`, hopefully done right.
 Raku-style meta-operators:
 `reduce reducewith zip zipwith cross crosswith hyper hyperwith applyop reverseop`
 No syntax, sadly.
-- `Object::Tap`
-Allows Ruby-style object tapping:
-`foo->$_tap(...)->...`
+- `Object::Util`
+Provides functions such as:
+`->$_try`, `->$_call_if_object`, `->$dump`, `->$_tap` (like `Object::Tap`).
+Also these, though they shouldn't be necessary with Zydeco:
+`->$_clone`, `->$_extend`, `->$_with_traits`.
 - `List::Maker`
 Raku-style `...` range + Raku-style `<>`.
 Might conflict with other modules?
