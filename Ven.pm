@@ -3,7 +3,6 @@ package Ven;
 use Filter::Macro;
 use MooseX::Clone;
 use assign::0;
-#use Perl6::Controls;
 use Syntax::Keyword::Match;
 use syntax gather => {
   gather => { -as => 'rgather' },

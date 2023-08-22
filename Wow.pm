@@ -26,7 +26,7 @@ class Perk {
 
 class Character with ::MooseX::Clone {
   param name (type => Str, is => ro);
-  param level (type => Int, is => ro);
+  param level (type => PositiveNum, is => ro);
   param wowclass (
     is => ro,
     enum    => [WOWCLASSES],
@@ -35,7 +35,7 @@ class Character with ::MooseX::Clone {
   param perks (
     is => ro,
     isa => ArrayRef[Perk],
-  ); # TODO handles => add_perk => push etc
+  );
 
   factory char_from_data(%data) {
     my @perks = map { Perk->new(name => $_) } ($data{'perks'} // [])->@*;

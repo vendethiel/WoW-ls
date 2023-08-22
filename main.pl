@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 use v5.38.0;
 use lib '.';
+use Cli;
 use Wow;
 use assign::0;
 use Syntax::Keyword::Match;
@@ -19,6 +20,8 @@ for my $char (@char) {
 }
 say "";
 
+my ($main, @args) = @ARGV;
+Cli->new_cli(main => $main // "", args => \@args)->run;
 
 match ($ARGV[0] // "" : eq) {
   case ("add") {
@@ -40,6 +43,7 @@ match ($ARGV[0] // "" : eq) {
         my $updated = $found->with_perk($perk);
         say "Character with new perk:";
         say $updated->introduction;
+        exit if 1;
       }
 
       case ("rm") {
