@@ -2,7 +2,7 @@
 use v5.38.0;
 use lib '.';
 use Cli;
-use Wow;
+use Wow qw/+Wowclass/;
 use assign::0;
 use Syntax::Keyword::Match;
 use Quantum::Superpositions;
@@ -20,8 +20,8 @@ for my $char (@char) {
 }
 say "";
 
-my ($main, @args) = @ARGV;
-Cli->new_cli(main => $main // "", args => \@args)->run;
+# https://github.com/maros/MooseX-App/pull/70
+#Cli->new_root->new_with_command->run();
 
 match ($ARGV[0] // "" : eq) {
   case ("add") {
@@ -55,7 +55,7 @@ match ($ARGV[0] // "" : eq) {
   }
 
   case ("") {
-    unless (all(Wow::WOWCLASSES) eq any(map {$_->wowclass} @char)) {
+    unless (all(Wowclass) eq any(map {$_->wowclass} @char)) {
       say "Missing classes!";
     }
   }

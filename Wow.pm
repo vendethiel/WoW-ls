@@ -3,12 +3,15 @@ use lib '.';
 package Wow;
 use Zydeco declare => [qw(Perk Character)];
 use Ven;
-use constant WOWCLASSES => qw/rogue mage priest druid warrior warlock hunter deathknight paladin shaman/;
-
-# Temporary workaround for this issue:
-# https://github.com/tobyink/p5-zydeco/issues/15
+use Exporter::Almighty -setup => {
+  enum => {
+    Wowclass => [qw/rogue mage priest druid warrior warlock hunter deathknight paladin shaman/],
+    Mountperk => [qw/mountwotlk mountbc mount60 mount40/],
+  },
+};
 
 BEGIN {
+  # https://github.com/tobyink/p5-zydeco/issues/15
   package Wow::Types;
   use Type::Library -base;
 }
@@ -16,7 +19,7 @@ BEGIN {
 class Perk {
   param name (
     is => ro,
-    enum => [qw/mountwotlk mountbc mount60 mount40/],
+    enum => Mountperk,
   );
 
   coerce from Str via from_string {
@@ -25,11 +28,11 @@ class Perk {
 }
 
 class Character with ::MooseX::Clone {
-  param name (type => Str, is => ro);
+  param name (type => NonEmptySimpleStr, is => ro);
   param level (type => PositiveNum, is => ro);
   param wowclass (
     is => ro,
-    enum    => [WOWCLASSES],
+    isa => Wowclass,
     handles => 1,
   );
   param perks (

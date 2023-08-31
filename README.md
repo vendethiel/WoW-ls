@@ -6,6 +6,8 @@ Experimental project to toy with a few Perl projects, such as:
 - `Syntax::Keyword::Gather`
 - `Syntax::Keyword::Match`
 - `Quantum::Superpositions`
+- `MooseX::App`
+- `Exporter::Almighty`
 
 To investigate:
 - `Types::Algebraic`
