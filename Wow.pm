@@ -41,7 +41,7 @@ class Character with ::MooseX::Clone {
   );
 
   factory char_from_data(%data) {
-    my @perks = map { Perk->new(name => $_) } ($data{'perks'} // [])->@*;
+    my @perks = map { Perk->new(%$_) } ($data{'perks'} // [])->@*;
     return $class->new(%data{qw/name wowclass level/}, perks => \@perks)
   }
 
@@ -74,6 +74,9 @@ class Character with ::MooseX::Clone {
       return $mount if $self->has_perk($mount);
     }
   }
+
+  method with_class(Wowclass $wowclass) = $self->clone(wowclass => $wowclass);
+  method with_level(NumRange[1, 80] $level) = $self->clone(level => $level);
 
   method has_perk(Perk $perk) = any(map {$_->name} $self->perks->@*) eq $perk->name;
 
