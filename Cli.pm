@@ -26,6 +26,14 @@ role Named {
   }
 }
 
+role Perked {
+  param perk (
+    type => Wow::Perk,
+    traits => ['AppOption'],
+    cmd_type => 'parameter',
+  );
+}
+
 class Ls {
   toolkit Moose (App::Command);
 
@@ -48,12 +56,7 @@ class Check {
 
 class Perk::Add {
   toolkit Moose (App::Command);
-  param perk (
-    type => Wow::Perk,
-    traits => ['AppOption'], 
-    cmd_type => 'parameter',
-  );
-  with Named;
+  with Named, Perked;
 
   method run($chars) {
     my $updated = $self->found->with_perk($self->perk);
@@ -64,12 +67,7 @@ class Perk::Add {
 
 class Perk::Rm {
   toolkit Moose (App::Command);
-  param perk (
-    type => Wow::Perk,
-    traits => ['AppOption'], 
-    cmd_type => 'parameter',
-  );
-  with Named;
+  with Named, Perked;
 
   method run($chars) {
     my $updated = $self->found->without_perk($self->perk);
