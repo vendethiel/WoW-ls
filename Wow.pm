@@ -29,7 +29,7 @@ class Perk {
 
 class Character with ::MooseX::Clone {
   param name (type => NonEmptySimpleStr, is => ro);
-  param level (type => PositiveNum, is => ro);
+  param level (type => NumRange[1, 80], is => ro);
   param wowclass (
     is => ro,
     isa => Wowclass,
