@@ -61,7 +61,7 @@ class Perk::Add {
   toolkit Moose (App::Command);
   with Named(1), Perked(2);
 
-  method run($chars) {
+  method run($) {
     my $updated = $self->found->with_perk($self->perk);
     Data->new_character_update($updated, 'added perk');
   }
@@ -71,7 +71,7 @@ class Perk::Rm {
   toolkit Moose (App::Command);
   with Named(1), Perked(2);
 
-  method run($chars) {
+  method run($) {
     my $updated = $self->found->without_perk($self->perk);
     Data->new_character_update($updated, 'removed perk');
   }
@@ -87,7 +87,7 @@ class Reclass {
     cmd_position => 2,
   );
 
-  method run($chars) {
+  method run($) {
     my $updated = $self->found->with_class($self->wowclass);
     Data->new_character_update($updated, 'class');
   }
@@ -103,7 +103,7 @@ class Level {
     cmd_position => 2,
   );
 
-  method run($chars) {
+  method run($) {
     my $updated = $self->found->with_level($self->level);
     Data->new_character_update($updated, 'level');
   }
@@ -119,7 +119,34 @@ class Rename {
     cmd_position => 2
   );
 
-  method run($chars) {
+  method run($) {
     Data->new_character_rename($self->found->name, $self->new_name);
+  }
+}
+
+class Add {
+  toolkit Moose (App::Command);
+  param name (
+    type => NonEmptySimpleStr,
+    traits => ['AppOption'],
+    cmd_type => 'parameter',
+    cmd_position => 1
+  );
+  param wowclass (
+    type => Wowclass,
+    traits => ['AppOption'],
+    cmd_type => 'parameter',
+    cmd_position => 2
+  );
+  param level (
+    type => Int,
+    traits => ['AppOption'],
+    cmd_type => 'parameter',
+    cmd_position => 3
+  );
+
+  method run($) {
+    my $char = Wow->char_from_data(name => $self->name, wowclass => $self->wowclass, level => $self->level);
+    Data->new_character_add($char);
   }
 }
