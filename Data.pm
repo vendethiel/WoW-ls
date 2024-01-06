@@ -33,16 +33,25 @@ class Updater with ::MooseX::Clone {
     Dump($self->characters->@*) > io->file($self->filename);
   }
 
-  multi method update_char(Character $char) = $self->update_char($char->name, $char);
-
-  multi method update_char($name, Character $char) {
+  method update_char(Character $char) {
     my @char = map { $_->name eq $char->name ? $char : $_ } $self->characters->@*;
     $self->clone(characters => \@char);
   }
 
-  method with_char(Character $char) {
+  method rename_char($old_name, $new_name) {
     my @char = $self->characters->@*;
-    die "Already exists" if any(@char)->name eq $char->name;
+    my @name = map {$_->name} @char;
+    die "Cannot rename to itself" if $old_name eq $new_name;
+    die "Does not exist" unless any(@name) eq $old_name;
+    die "Already exists" if any(@name) eq $new_name;
+    my @updated = map { $_->name eq $old_name ? $_->with_name($new_name) : $_ } $self->characters->@*;
+    $self->clone(characters => \@updated);
+  }
+
+  method add_char(Character $char) {
+    my @char = $self->characters->@*;
+    my @name = map {$_->name} @char;
+    die "Already exists" if any(@name) eq $char->name;
     $self->clone(characters => [@char, $char]);
   }
 }
@@ -68,15 +77,15 @@ class Operation::CharacterUpdate with Operation {
 
 class Operation::CharacterRename with Operation {
   has old_name! ( type => NonEmptySimpleStr );
-  has character! ( type => Wow::Character );
+  has new_name! ( type => NonEmptySimpleStr );
 
-  factory new_character_rename($old_name, Character $char) {
-    $class->new(old_name => $old_name, character => $char);
+  factory new_character_rename($old_name, $new_name) {
+    $class->new(old_name => $old_name, new_name => $new_name);
   }
 
   method perform(Updater $updater) {
-    say "Renaming " . $self->old_name . " to " . $self->character->name;
-    $updater->update_char($self->old_name, $self->character)->save;
+    say "Renaming " . $self->old_name . " to " . $self->new_name;
+    $updater->rename_char($self->old_name, $self->new_name)->save;
   }
 }
 
@@ -89,6 +98,6 @@ class Operation::CharacterAdd with Operation {
 
   method perform(Updater $updater) {
     say "Adding " . $self->character->name;
-    $updater->with_char($self->character)->save;
+    $updater->add_char($self->character)->save;
   }
 }

@@ -77,6 +77,7 @@ class Character with ::MooseX::Clone {
 
   method with_class(Wowclass $wowclass) = $self->clone(wowclass => $wowclass);
   method with_level(NumRange[1, 80] $level) = $self->clone(level => $level);
+  method with_name(NonEmptySimpleStr $name) = $self->clone(name => $name);
 
   method has_perk(Perk $perk) = any(map {$_->name} $self->perks->@*) eq $perk->name;
 

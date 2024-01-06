@@ -108,3 +108,18 @@ class Level {
     Data->new_character_update($updated, 'level');
   }
 }
+
+class Rename {
+  toolkit Moose (App::Command);
+  with Named(1);
+  param new_name (
+    type => NonEmptySimpleStr,
+    traits => ['AppOption'],
+    cmd_type => 'parameter',
+    cmd_position => 2
+  );
+
+  method run($chars) {
+    Data->new_character_rename($self->found->name, $self->new_name);
+  }
+}
