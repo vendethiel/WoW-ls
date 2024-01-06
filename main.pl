@@ -3,15 +3,8 @@ use v5.38.0;
 use lib '.';
 use Wow;
 use Cli;
-use YAML::XS;
-use IO::All;
+use Data;
 
-my $contents = io('chars.yml')->slurp;
-my @chardata = Load($contents);
-my @char = map { Wow->char_from_data(%$_) } @chardata;
-
-my $ret = Cli->new_with_command->run(\@char);
-if (Wow::is_Character($ret)) {
-  my @updated = map { $_->name eq $ret->name ? $ret : $_ } @char;
-  (Dump @updated) > io->file('chars.yml');
-}
+my $updater = Data->updater_from_file('chars.yml');
+my $ret = Cli->new_with_command->run($updater->characters);
+$ret->perform($updater) if Data::is_Operation $ret;

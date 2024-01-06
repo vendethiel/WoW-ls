@@ -1,6 +1,7 @@
 use v5.38.0;
 use lib '.';
 package Cli;
+use Data;
 use Wow qw/+Wowclass/;
 use Zydeco;
 use Ven;
@@ -8,12 +9,12 @@ use List::Util qw(first);
 use MooseX::App;
 app_exclude 'Cli::Types', 'Cli::Named', 'Cli::Perked';
 
-role Named {
+role Named($pos) {
   param name (
     type => NonEmptySimpleStr,
     traits => ['AppOption'], 
     cmd_type => 'parameter',
-    cmd_position => 2,
+    cmd_position => $pos,
   );
   has found (
     is => rw,
@@ -27,12 +28,12 @@ role Named {
   }
 }
 
-role Perked {
+role Perked($pos) {
   param perk (
     type => Wow::Perk,
     traits => ['AppOption'],
     cmd_type => 'parameter',
-    cmd_position => 1,
+    cmd_position => $pos,
   );
 }
 
@@ -58,33 +59,27 @@ class Check {
 
 class Perk::Add {
   toolkit Moose (App::Command);
-  with Named;
-  with Perked;
+  with Named(1), Perked(2);
 
   method run($chars) {
     my $updated = $self->found->with_perk($self->perk);
-    say "Character with new perk:";
-    say $updated->introduction;
-    $updated
+    Data->new_character_update($updated, 'added perk');
   }
 }
 
 class Perk::Rm {
   toolkit Moose (App::Command);
-  with Named;
-  with Perked;
+  with Named(1), Perked(2);
 
   method run($chars) {
     my $updated = $self->found->without_perk($self->perk);
-    say "character with perk removed:";
-    say $updated->introduction;
-    $updated
+    Data->new_character_update($updated, 'removed perk');
   }
 }
 
 class Reclass {
   toolkit Moose (App::Command);
-  with Named;
+  with Named(1);
   param wowclass (
     type => Wowclass,
     traits => ['AppOption'],
@@ -94,15 +89,13 @@ class Reclass {
 
   method run($chars) {
     my $updated = $self->found->with_class($self->wowclass);
-    say "character with new class:";
-    say $updated->introduction;
-    $updated
+    Data->new_character_update($updated, 'class');
   }
 }
 
 class Level {
   toolkit Moose (App::Command);
-  with Named;
+  with Named(1);
   param level (
     type => NumRange[1, 80],
     traits => ['AppOption'],
@@ -112,8 +105,6 @@ class Level {
 
   method run($chars) {
     my $updated = $self->found->with_level($self->level);
-    say "character leveled:";
-    say $updated->introduction;
-    $updated
+    Data->new_character_update($updated, 'level');
   }
 }
