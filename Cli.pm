@@ -51,8 +51,9 @@ class Check {
   toolkit Moose (App::Command);
 
   method run($chars) {
-    unless (all(Wowclass) eq any(map {$_->wowclass} $chars->@*)) {
-      say "Missing classes!";
+    my $missing = any(Wowclass->values->@*) ne all(map {$_->wowclass} $chars->@*);
+    if ($missing) {
+      say "Missing classes: " . join ", ", eigenstates($missing);
     }
   }
 }

@@ -61,8 +61,8 @@ interface Operation {
 }
 
 class Operation::CharacterUpdate with Operation {
-  has character! ( type => Wow::Character );
-  has change! ( type => NonEmptySimpleStr );
+  param character ( type => Wow::Character );
+  param change ( type => NonEmptySimpleStr );
 
   factory new_character_update(Character $char, $change) {
     $class->new(character => $char, change => $change);
@@ -76,8 +76,7 @@ class Operation::CharacterUpdate with Operation {
 }
 
 class Operation::CharacterRename with Operation {
-  has old_name! ( type => NonEmptySimpleStr );
-  has new_name! ( type => NonEmptySimpleStr );
+  param old_name, new_name ( type => NonEmptySimpleStr );
 
   factory new_character_rename($old_name, $new_name) {
     $class->new(old_name => $old_name, new_name => $new_name);
@@ -90,7 +89,7 @@ class Operation::CharacterRename with Operation {
 }
 
 class Operation::CharacterAdd with Operation {
-  has character! ( type => Wow::Character );
+  param character ( type => Wow::Character );
 
   factory new_character_add(Character $char) {
     $class->new(character => $char);
