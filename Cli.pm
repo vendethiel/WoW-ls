@@ -9,7 +9,7 @@ use List::Util qw(first);
 use MooseX::App;
 app_exclude 'Cli::Types', 'Cli::Named', 'Cli::Perked';
 
-role Named($pos) {
+role Named(Int $pos) {
   param name (
     type => NonEmptySimpleStr,
     traits => ['AppOption'], 
@@ -28,7 +28,7 @@ role Named($pos) {
   }
 }
 
-role Perked($pos) {
+role Perked(Int $pos) {
   param perk (
     type => Wow::Perk,
     traits => ['AppOption'],
@@ -41,6 +41,7 @@ class Ls {
   toolkit Moose (App::Command);
 
   method run($chars) {
+    say "Characters:";
     for my $char ($chars->@*) {
       say $char->introduction;
     }
