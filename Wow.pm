@@ -13,7 +13,10 @@ use Exporter::Almighty -setup => {
 BEGIN {
   # https://github.com/tobyink/p5-zydeco/issues/15
   package Wow::Types;
-  use Type::Library -base;
+  use Type::Library -base, -utils;
+  use Types::Common qw(NumRange NonEmptySimpleStr);
+  declare Level => as NumRange[1, 80];
+  declare CharName => as NonEmptySimpleStr;
 }
 
 class Perk {
@@ -28,8 +31,8 @@ class Perk {
 }
 
 class Character with ::MooseX::Clone {
-  param name (type => NonEmptySimpleStr, is => ro);
-  param level (type => NumRange[1, 80], is => ro);
+  param name (type => Wow::Types::CharName, is => ro);
+  param level (type => Wow::Types::Level, is => ro);
   param wowclass (
     is => ro,
     isa => Wowclass,
@@ -76,8 +79,8 @@ class Character with ::MooseX::Clone {
   }
 
   method with_class(Wowclass $wowclass) = $self->clone(wowclass => $wowclass);
-  method with_level(NumRange[1, 80] $level) = $self->clone(level => $level);
-  method with_name(NonEmptySimpleStr $name) = $self->clone(name => $name);
+  method with_level(Wow::Types::Level $level) = $self->clone(level => $level);
+  method with_name(Wow::Types::CharName $name) = $self->clone(name => $name);
 
   method has_perk(Perk $perk) = any(map {$_->name} $self->perks->@*) eq $perk->name;
 

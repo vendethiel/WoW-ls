@@ -11,7 +11,7 @@ app_exclude 'Cli::Types', 'Cli::Named', 'Cli::Perked';
 
 role Named(Int $pos) {
   param name (
-    type => NonEmptySimpleStr,
+    type => Wow::Types::CharName,
     traits => ['AppOption'], 
     cmd_type => 'parameter',
     cmd_position => $pos,
@@ -99,7 +99,7 @@ class Level {
   toolkit Moose (App::Command);
   with Named(1);
   param level (
-    type => NumRange[1, 80],
+    type => Wow::Types::Level,
     traits => ['AppOption'],
     cmd_type => 'parameter',
     cmd_position => 2,
@@ -115,7 +115,7 @@ class Rename {
   toolkit Moose (App::Command);
   with Named(1);
   param new_name (
-    type => NonEmptySimpleStr,
+    type => Wow::Types::CharName,
     traits => ['AppOption'],
     cmd_type => 'parameter',
     cmd_position => 2

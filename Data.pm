@@ -76,7 +76,7 @@ class Operation::CharacterUpdate with Operation {
 }
 
 class Operation::CharacterRename with Operation {
-  param old_name, new_name ( type => NonEmptySimpleStr );
+  param old_name, new_name ( type => Wow::Types::CharName );
 
   factory new_character_rename($old_name, $new_name) {
     $class->new(old_name => $old_name, new_name => $new_name);
