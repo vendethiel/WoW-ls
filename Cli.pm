@@ -121,7 +121,8 @@ class Rename {
     cmd_position => 2
   );
 
-  method run($) {
+  method run($chars) {
+    die "" if $self->new_name eq any(map {$_->name} $chars);
     Data->new_character_rename($self->found->name, $self->new_name);
   }
 }

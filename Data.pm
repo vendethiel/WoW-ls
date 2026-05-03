@@ -58,6 +58,7 @@ class Updater with ::MooseX::Clone {
 
 interface Operation {
   requires perform(Updater);
+  requires message();
 }
 
 class Operation::CharacterUpdate with Operation {
@@ -69,9 +70,13 @@ class Operation::CharacterUpdate with Operation {
   }
 
   method perform(Updater $updater) {
-    say "Updated character " . $self->character->name . " (" . $self->change . ")";
-    say $self->character->introduction;
     $updater->update_char($self->character)->save;
+  }
+
+  method message {
+    my $s = "Updated character " . $self->character->name . " (" . $self->change . ")\n";
+    $s .= $self->character->introduction;
+    $s
   }
 }
 
@@ -83,8 +88,11 @@ class Operation::CharacterRename with Operation {
   }
 
   method perform(Updater $updater) {
-    say "Renaming " . $self->old_name . " to " . $self->new_name;
     $updater->rename_char($self->old_name, $self->new_name)->save;
+  }
+
+  method message {
+    "Renaming " . $self->old_name . " to " . $self->new_name;
   }
 }
 
@@ -96,7 +104,14 @@ class Operation::CharacterAdd with Operation {
   }
 
   method perform(Updater $updater) {
-    say "Adding " . $self->character->name;
     $updater->add_char($self->character)->save;
   }
+
+  method message {
+    "Adding " . $self->character->name;
+  }
+}
+
+interface Error {
+  requires message();
 }
