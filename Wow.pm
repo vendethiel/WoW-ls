@@ -15,7 +15,7 @@ BEGIN {
   package Wow::Types;
   use Type::Library -base, -utils;
   use Types::Common qw(NumRange NonEmptySimpleStr);
-  declare Level => as NumRange[1, 80];
+  declare Level => as NumRange[1, 90];
   declare CharName => as NonEmptySimpleStr;
 }
 

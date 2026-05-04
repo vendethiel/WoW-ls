@@ -122,7 +122,7 @@ class Rename {
   );
 
   method run($chars) {
-    die "" if $self->new_name eq any(map {$_->name} $chars);
+    die "Already used name" if $self->new_name eq any(map {$_->name} $chars);
     Data->new_character_rename($self->found->name, $self->new_name);
   }
 }
