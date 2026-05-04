@@ -73,7 +73,7 @@ class Operation::CharacterUpdate with Operation {
     $updater->update_char($self->character)->save;
   }
 
-  method message {
+  method message() {
     my $s = "Updated character " . $self->character->name . " (" . $self->change . ")\n";
     $s .= $self->character->introduction;
     $s
@@ -91,7 +91,7 @@ class Operation::CharacterRename with Operation {
     $updater->rename_char($self->old_name, $self->new_name)->save;
   }
 
-  method message {
+  method message() {
     "Renaming " . $self->old_name . " to " . $self->new_name;
   }
 }
@@ -107,7 +107,7 @@ class Operation::CharacterAdd with Operation {
     $updater->add_char($self->character)->save;
   }
 
-  method message {
+  method message() {
     "Adding " . $self->character->name;
   }
 }

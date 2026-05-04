@@ -23,6 +23,7 @@ role Named(Int $pos) {
 
   before run($chars) {
     my $found = first {$_->name eq $self->name} $chars->@*;
+    # TODO use `around` so we can skip `$this->$next` and return a proper error
     die "No character named ".$self->name() unless $found;
     $self->found($found);
   }
