@@ -115,3 +115,15 @@ class Operation::CharacterAdd with Operation {
 interface Error {
   requires message();
 }
+
+class CharacterAlreadyExistsError with Error {
+  param name ( type => Wow::Types::CharName );
+
+  factory new_character_already_exists_error(Wow::Types::CharName $name) {
+    $class->new(name => $name);
+  }
+
+  method message() {
+    $self->name() . " already exists";
+  }
+}

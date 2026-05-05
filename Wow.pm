@@ -22,11 +22,19 @@ BEGIN {
 class Perk {
   param name (
     is => ro,
+    isa => Str,
     enum => Mountperk,
   );
 
   coerce from Str via from_string {
     return $class->new(name => $_);
+  }
+
+  multi factory new_perk(Str $perk) {
+    $class->from_string($perk);
+  }
+  multi factory new_perk(HashRef $opts) {
+    $class->new(%$opts)
   }
 }
 
@@ -44,7 +52,7 @@ class Character with ::MooseX::Clone {
   );
 
   factory char_from_data(%data) {
-    my @perks = map { Perk->new(%$_) } ($data{'perks'} // [])->@*;
+    my @perks = map { Wow->new_perk($_) } ($data{'perks'} // [])->@*;
     return $class->new(%data{qw/name wowclass level/}, perks => \@perks)
   }
 
