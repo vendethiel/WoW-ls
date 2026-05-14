@@ -1,10 +1,10 @@
 use v5.38.0;
 use lib '.';
 package Data;
-use Wow;
+use Wow qw/+Wowclass/;
+use Quantum::Superpositions;
 use YAML::XS;
 use IO::All;
-use Ven;
 use Zydeco;
 
 BEGIN {
@@ -112,11 +112,32 @@ class Operation::CharacterAdd with Operation {
   }
 }
 
+# `Operation` but idempotent
+interface Result {
+  requires message();
+}
+
+class Result::CheckClasses with Result {
+  param missing ( type => ArrayRef[Wowclass] );
+
+  factory new_check_classes(ArrayRef[Wowclass] $missing) {
+    $class->new(missing => $missing);
+  }
+
+  method message() {
+    if ($self->missing->@*) {
+      "Missing classes: " . join ", ", $self->missing->@*;
+    } else {
+      "All classes OK"
+    }
+  }
+}
+
 interface Error {
   requires message();
 }
 
-class CharacterAlreadyExistsError with Error {
+class Error::CharacterAlreadyExists with Error {
   param name ( type => Wow::Types::CharName );
 
   factory new_character_already_exists_error(Wow::Types::CharName $name) {
@@ -124,6 +145,18 @@ class CharacterAlreadyExistsError with Error {
   }
 
   method message() {
-    $self->name() . " already exists";
+    $self->name . " already exists";
+  }
+}
+
+class Error::CharacterNotFound with Error {
+  param name ( type => Wow::Types::CharName );
+
+  factory new_character_not_found_error(Wow::Types::CharName $name) {
+    $class->new(name => $name);
+  }
+
+  method message() {
+    $self->name . " not found";
   }
 }

@@ -4,7 +4,7 @@ package Cli;
 use Data;
 use Wow qw/+Wowclass/;
 use Zydeco;
-use Ven;
+use Quantum::Superpositions;
 use List::Util qw(first);
 use MooseX::App;
 app_exclude 'Cli::Types', 'Cli::Named', 'Cli::Perked';
@@ -24,10 +24,10 @@ role Named(Int $pos) {
   around run($chars) {
     my $found = first {$_->name eq $self->name} $chars->@*;
     if ($found) {
-      Data->new_character_already_exists_error($self->name());
-    } else {
       $self->found($found);
       $self->$next($chars);
+    } else {
+      Data->new_character_not_found_error($self->name());
     }
   }
 }
@@ -57,9 +57,7 @@ class Check {
 
   method run($chars) {
     my $missing = any(Wowclass->values->@*) ne all(map {$_->wowclass} $chars->@*);
-    if ($missing) {
-      say "Missing classes: " . join ", ", eigenstates($missing);
-    }
+    Data->new_check_classes([eigenstates($missing)])
   }
 }
 
@@ -126,8 +124,11 @@ class Rename {
   );
 
   method run($chars) {
-    die "Already used name" if $self->new_name eq any(map {$_->name} $chars);
-    Data->new_character_rename($self->found->name, $self->new_name);
+    if ($self->new_name eq any(map {$_->name} $chars)) {
+      Data->new_character_already_exists_error($self->new_name);
+    } else {
+      Data->new_character_rename($self->found->name, $self->new_name);
+    }
   }
 }
 

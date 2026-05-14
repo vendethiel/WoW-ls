@@ -14,6 +14,10 @@ given ($ret) {
     my $message = $ret->message;
     say $message if $message;
   }
+  when (\&Data::is_Result) {
+    my $message = $ret->message;
+    say $message if $message;
+  }
   when (\&Data::is_Error) {
     say STDERR "Error: " . $ret->message;
     exit 1;

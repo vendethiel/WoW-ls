@@ -2,7 +2,12 @@ use v5.38.0;
 use lib '.';
 package Wow;
 use Zydeco declare => [qw(Perk Character)];
-use Ven;
+use assign::0;
+use Quantum::Superpositions;
+use syntax gather => {
+  gather => { -as => 'rgather' },
+  take   => { -as => 'rtake' },
+};
 use Exporter::Almighty -setup => {
   enum => {
     Wowclass => [qw/rogue mage priest druid warrior warlock hunter deathknight paladin shaman/],
