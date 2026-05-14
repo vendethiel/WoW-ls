@@ -3,6 +3,7 @@ use lib '.';
 package Cli;
 use Data;
 use Wow qw/+Wowclass/;
+use Wow::Types qw/Character Perk CharName/;
 use Zydeco;
 use Quantum::Superpositions;
 use List::Util qw(first);
@@ -11,14 +12,14 @@ app_exclude 'Cli::Types', 'Cli::Named', 'Cli::Perked';
 
 role Named(Int $pos) {
   param name (
-    type => Wow::Types::CharName,
+    type => CharName,
     traits => ['AppOption'], 
     cmd_type => 'parameter',
     cmd_position => $pos,
   );
   has found (
     is => rw,
-    type => Wow::Character
+    type => Character
   );
 
   around run($chars) {
@@ -34,7 +35,7 @@ role Named(Int $pos) {
 
 role Perked(Int $pos) {
   param perk (
-    type => Wow::Perk,
+    type => Perk,
     traits => ['AppOption'],
     cmd_type => 'parameter',
     cmd_position => $pos,
@@ -44,12 +45,7 @@ role Perked(Int $pos) {
 class Ls {
   toolkit Moose (App::Command);
 
-  method run($chars) {
-    say "Characters:";
-    for my $char ($chars->@*) {
-      say $char->introduction;
-    }
-  }
+  method run($chars) = Data->new_char_list($chars);
 }
 
 class Check {
@@ -117,7 +113,7 @@ class Rename {
   toolkit Moose (App::Command);
   with Named(1);
   param new_name (
-    type => Wow::Types::CharName,
+    type => CharName,
     traits => ['AppOption'],
     cmd_type => 'parameter',
     cmd_position => 2

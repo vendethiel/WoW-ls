@@ -2,7 +2,12 @@ use v5.38.0;
 use lib '.';
 package Data;
 use Wow qw/+Wowclass/;
+use Wow::Types qw/Character CharName/;
 use Quantum::Superpositions;
+use syntax gather => {
+  gather => { -as => 'rgather' },
+  take   => { -as => 'rtake' },
+};
 use YAML::XS;
 use IO::All;
 use Zydeco;
@@ -20,7 +25,7 @@ class Updater with ::MooseX::Clone {
   );
   has characters (
     is => ro,
-    type => ArrayRef[Wow::Character]
+    type => ArrayRef[Character]
   );
 
   factory updater_from_file(NonEmptySimpleStr $filename) {
@@ -62,7 +67,7 @@ interface Operation {
 }
 
 class Operation::CharacterUpdate with Operation {
-  param character ( type => Wow::Character );
+  param character ( type => Character );
   param change ( type => NonEmptySimpleStr );
 
   factory new_character_update(Character $char, $change) {
@@ -81,7 +86,7 @@ class Operation::CharacterUpdate with Operation {
 }
 
 class Operation::CharacterRename with Operation {
-  param old_name, new_name ( type => Wow::Types::CharName );
+  param old_name, new_name ( type => CharName );
 
   factory new_character_rename($old_name, $new_name) {
     $class->new(old_name => $old_name, new_name => $new_name);
@@ -97,7 +102,7 @@ class Operation::CharacterRename with Operation {
 }
 
 class Operation::CharacterAdd with Operation {
-  param character ( type => Wow::Character );
+  param character ( type => Character );
 
   factory new_character_add(Character $char) {
     $class->new(character => $char);
@@ -115,6 +120,23 @@ class Operation::CharacterAdd with Operation {
 # `Operation` but idempotent
 interface Result {
   requires message();
+}
+
+class Result::CharList with Result {
+  param chars ( type => ArrayRef[Character] );
+
+  factory new_char_list(ArrayRef[Character] $chars) {
+    $class->new(chars => $chars);
+  }
+
+  method message() {
+    join "\n", rgather {
+      rtake "Characters:";
+      for my $char ($self->chars->@*) {
+        rtake $char->introduction;
+      }
+    }
+  }
 }
 
 class Result::CheckClasses with Result {
@@ -138,9 +160,9 @@ interface Error {
 }
 
 class Error::CharacterAlreadyExists with Error {
-  param name ( type => Wow::Types::CharName );
+  param name ( type => CharName );
 
-  factory new_character_already_exists_error(Wow::Types::CharName $name) {
+  factory new_character_already_exists_error(CharName $name) {
     $class->new(name => $name);
   }
 
@@ -150,9 +172,9 @@ class Error::CharacterAlreadyExists with Error {
 }
 
 class Error::CharacterNotFound with Error {
-  param name ( type => Wow::Types::CharName );
+  param name ( type => CharName );
 
-  factory new_character_not_found_error(Wow::Types::CharName $name) {
+  factory new_character_not_found_error(CharName $name) {
     $class->new(name => $name);
   }
 
